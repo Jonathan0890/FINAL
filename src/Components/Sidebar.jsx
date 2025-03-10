@@ -104,7 +104,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/categorias"
+                to="/categoriasd"
                 className="flex items-center p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
                 <span>Categorías</span>
@@ -152,7 +152,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/tasa-conversion"
+                to="/pantallas"
                 className="flex items-center p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
                 <span>Tasa de Conversión</span>

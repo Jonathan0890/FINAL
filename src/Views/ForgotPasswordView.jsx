@@ -10,6 +10,8 @@ const ForgotPasswordView = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
+    // Estado para manejar el loading
+    const [isLoading, setIsLoading] = useState(false);
 
     // Hook para redireccionar al usuario
     const navigate = useNavigate();
@@ -18,15 +20,22 @@ const ForgotPasswordView = () => {
     const handleRecovery = async (e) => {
         e.preventDefault();
 
-        // Limpiar mensajes de error previos
+        // Limpiar mensajes de error y éxito previos
         setErrorMessage("");
         setSuccessMessage("");
 
+        // Validar el correo electrónico
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
+            setErrorMessage("Por favor, ingresa un correo electrónico válido.");
+            return;
+        }
+
+        // Iniciar el proceso de recuperación
+        setIsLoading(true);
+
         try {
             // Enviar el correo electrónico a la API para recuperar la contraseña
-            const response = await axios.post("/api/forgot-password", {
-                email,
-            });
+            const response = await axios.post("/api/forgot-password", { email });
 
             // Mostrar mensaje de éxito
             setSuccessMessage(
@@ -44,6 +53,9 @@ const ForgotPasswordView = () => {
                 error.response?.data?.message ||
                 "Hubo un error al procesar tu solicitud. Inténtalo de nuevo."
             );
+        } finally {
+            // Finalizar el estado de loading
+            setIsLoading(false);
         }
     };
 
@@ -86,9 +98,10 @@ const ForgotPasswordView = () => {
                 <div>
                     <button
                         type="submit"
-                        className="w-full bg-navy-blue text-white px-4 py-2 rounded-md hover:bg-light-blue transition-colors"
+                        className="w-full bg-navy-blue text-white px-4 py-2 rounded-md hover:bg-light-blue transition-colors disabled:opacity-50"
+                        disabled={isLoading}
                     >
-                        Recuperar Contraseña
+                        {isLoading ? "Enviando..." : "Recuperar Contraseña"}
                     </button>
                 </div>
             </form>
