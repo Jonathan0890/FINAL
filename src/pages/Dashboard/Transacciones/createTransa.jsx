@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createItem } from "../../../Services/apiService"; // Servicio para crear
+import { create } from "../../../Services/apiService"; // Cambia createItem por create
 
 const CreateTrans = () => {
     const [monto, setMonto] = useState("");
@@ -12,7 +12,7 @@ const CreateTrans = () => {
         const nuevaTransaccion = { Monto: monto, Descripcion: descripcion, Fecha: fecha, CategoriaId: categoriaId };
 
         try {
-            await createItem("Transaccion", nuevaTransaccion);
+            await create("Transaccion", nuevaTransaccion); // Cambia createItem por create
             alert("Transacción creada con éxito!");
             setMonto(""); setDescripcion(""); setFecha(""); setCategoriaId("");
         } catch (error) {

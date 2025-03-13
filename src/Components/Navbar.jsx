@@ -251,8 +251,7 @@ const Navbar = () => {
                                     Contacto
                                 </Link>
                             </li>
-
-                            {/* Pruebas */}
+                            {/* Pruebas 
                             <li>
                                 <Link
                                     to="/pruebas"
@@ -261,6 +260,7 @@ const Navbar = () => {
                                     Pruebas
                                 </Link>
                             </li>
+                            */}
                         </ul>
                     </div>
                 </div>

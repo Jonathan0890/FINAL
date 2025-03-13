@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchById, update } from "../../Services/apiService";
+import { fetchById, update } from "../../../Services/apiService";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EditMetaAhorro = () => {

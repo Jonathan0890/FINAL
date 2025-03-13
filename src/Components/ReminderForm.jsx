@@ -1,87 +1,125 @@
 import { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 
-const ReminderForm = ({ reminderToEdit, onReminderAdded, onReminderUpdated }) => {
-    const [reminder, setReminder] = useState({ id: 0, description: "", date: "" });
-    const [editing, setEditing] = useState(false);
+const ReminderForm = ({ 
+    reminderToEdit, 
+    onReminderAdded, 
+    onReminderUpdated,
+    onCancelEdit 
+}) => {
+    const [formData, setFormData] = useState({ 
+        nombre: "",
+        email: "",
+        descripcion: "",
+        fechaRecordatorio: "",
+        mensaje: ""
+    });
+
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (reminderToEdit) {
-            setReminder(reminderToEdit);
-            setEditing(true);
+            const fecha = new Date(reminderToEdit.fechaRecordatorio);
+            const formattedDate = fecha.toISOString().slice(0, 16);
+            
+            setFormData({
+                nombre: reminderToEdit.nombre,
+                email: reminderToEdit.email,
+                descripcion: reminderToEdit.descripcion,
+                fechaRecordatorio: formattedDate,
+                mensaje: reminderToEdit.mensaje || ""
+            });
         }
     }, [reminderToEdit]);
 
+    const validateForm = () => {
+        const newErrors = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!formData.nombre.trim()) newErrors.nombre = "Nombre requerido";
+        if (!emailRegex.test(formData.email)) newErrors.email = "Email inválido";
+        if (!formData.descripcion.trim()) newErrors.descripcion = "Descripción requerida";
+        if (!formData.fechaRecordatorio) newErrors.fechaRecordatorio = "Fecha requerida";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+
+        try {
+            const payload = {
+                ...formData,
+                fechaRecordatorio: new Date(formData.fechaRecordatorio).toISOString()
+            };
+
+            if (reminderToEdit) {
+                await onReminderUpdated({
+                    ...payload,
+                    pkRecordatorio: reminderToEdit.pkRecordatorio
+                });
+            } else {
+                await onReminderAdded(payload);
+            }
+            
+            setFormData({
+                nombre: "",
+                email: "",
+                descripcion: "",
+                fechaRecordatorio: "",
+                mensaje: ""
+            });
+        } catch (error) {
+            console.error("Error al guardar:", error);
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setReminder((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (editing) {
-            onReminderUpdated(reminder);
-        } else {
-            onReminderAdded({ ...reminder, id: Date.now() });
-        }
-        setReminder({ id: 0, description: "", date: "" });
-        setEditing(false);
-    };
-
-    const cancelEdit = () => {
-        setReminder({ id: 0, description: "", date: "" });
-        setEditing(false);
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-navy-blue mb-4">
-                {editing ? "Editar Recordatorio" : "Agregar Recordatorio"}
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                {reminderToEdit ? "✏️ Editar Recordatorio" : "➕ Nuevo Recordatorio"}
             </h2>
 
-            <div>
-                <label htmlFor="description" className="block text-dark-gray text-sm font-medium">
-                    Descripción
-                </label>
-                <input
-                    type="text"
-                    name="description"
-                    value={reminder.description}
-                    onChange={handleChange}
-                    id="description"
-                    className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-light-blue focus:border-light-blue"
-                    placeholder="Ej. Reunión con el equipo"
-                    required
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Campos del formulario... */}
             </div>
 
-            <div>
-                <label htmlFor="date" className="block text-dark-gray text-sm font-medium">
-                    Fecha
-                </label>
-                <input
-                    type="date"
-                    name="date"
-                    value={reminder.date}
-                    onChange={handleChange}
-                    id="date"
-                    className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-light-blue focus:border-light-blue"
-                    required
-                />
-            </div>
-
-            <div className="flex justify-between items-center mt-4">
-                <button type="submit" className="block bg-blue-500 text-white px-4 py-2 rounded-md">
-                    {editing ? "Actualizar Recordatorio" : "Agregar Recordatorio"}
-                </button>
-                {editing && (
-                    <button onClick={cancelEdit} 
-                    className="block bg-blue-500 text-white px-4 py-2 rounded-md">
+            <div className="flex justify-end gap-4 mt-6">
+                {reminderToEdit && (
+                    <button
+                        type="button"
+                        onClick={onCancelEdit}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                    >
                         Cancelar
                     </button>
                 )}
+                <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                    {reminderToEdit ? "Actualizar" : "Crear Recordatorio"}
+                </button>
             </div>
         </form>
     );
+};
+
+ReminderForm.propTypes = {
+    reminderToEdit: PropTypes.object,
+    onReminderAdded: PropTypes.func.isRequired,
+    onReminderUpdated: PropTypes.func.isRequired,
+    onCancelEdit: PropTypes.func.isRequired
 };
 
 export default ReminderForm;

@@ -20,6 +20,18 @@ import IndexCat from "../pages/Dashboard/Categorias/IndexCat.jsx";
 import Reportes from "../pages/Dashboard/Reportes/Repotes.jsx";
 import CreateCategoria from "../pages/Dashboard/Categorias/CreateCategoria.jsx";
 import EditCategoria from "../pages/Dashboard/Categorias/EditCategoria.jsx";
+import IndexUsuario from "../pages/Dashboard/Usuarios/indexUsu.jsx";
+import CreateUsuario from "../pages/Dashboard/Usuarios/CreateUsuario.jsx";
+import EditUsuario from "../pages/Dashboard/Usuarios/editUsuario.jsx";
+import IndexMetaAhorro from "../pages/Dashboard/Metas_Ahorro/IndexMA.jsx";
+import CreateMetaAhorro from "../pages/Dashboard/Metas_Ahorro/CreateMetas_Ahorro.jsx";
+import EditMetaAhorro from "../pages/Dashboard/Metas_Ahorro/EditMetas_Ahorro.jsx";
+import IndexRecordatorio from "../pages/Dashboard/Recordatorios/index.jsx";
+import CreateRecordatorio from "../pages/Dashboard/Recordatorios/createRecord.jsx";
+import EditRecordatorio from "../pages/Dashboard/Recordatorios/editRecord.jsx";
+import IndexTransaccion from "../pages/Dashboard/Transacciones/index.jsx";
+import CreateTransaccion from "../pages/Dashboard/Transacciones/createTransa.jsx";
+import EditTransaccion from "../pages/Dashboard/Transacciones/edit_Transa.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import Pantilla from "../pages/Pantilla.jsx";
 
@@ -63,10 +75,80 @@ const router = createBrowserRouter([
         path: "edit/:id",
         element: <EditCategoria />
       }
-
     ]
   },
-  
+  {
+    path: "/usuarios",
+    element: <IndexUsuario />,
+    children: [
+      {
+        path: "create",
+        element: <CreateUsuario />,
+      },
+      {
+        path: "edit/:id",
+        element: <EditUsuario />
+      }
+    ]
+  },
+  {
+    path: "/transacciones",
+    element: <IndexTransaccion/>,
+    children: [
+      {
+        path: "create",
+        element: <CreateTransaccion />,
+      },
+      {
+        path: "edit/:id",
+        element: <EditTransaccion />
+      }
+    ]
+  },
+  {
+    path: "/metas-ahorro",
+    element: <IndexMetaAhorro />,
+    children: [
+      {
+        path: "create",
+        element: <CreateMetaAhorro />,
+      },
+      {
+        path: "edit/:id",
+        element: <EditMetaAhorro />
+      }
+    ]
+  },
+  {
+    path: "/recordatorios",
+    element: <IndexRecordatorio />,
+    children: [
+      {
+        path: "create",
+        element: <CreateRecordatorio />,
+      },
+      {
+        path: "edit/:id",
+        element: <EditRecordatorio />
+      }
+    ]
+  }/*,
+  {
+    path: "/ventas-mensuales",
+    element: <NotFoundView />
+  },
+  {
+    path: "/ventas-totales",
+    element: <NotFoundView />
+  },
+  {
+    path: "/resumen",
+    element: <NotFoundView />
+  },
+  {
+    path: "/configuracion",
+    element: <NotFoundView />
+  }*/
 ]);
 
 export default router;

@@ -77,14 +77,7 @@ const Sidebar = () => {
                 <span>Reportes</span>
               </Link>
             </li>
-            <li>
-              <Link
-                to="/configuracion"
-                className="flex items-center p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span>Configuración</span>
-              </Link>
-            </li>
+            
             {/* Apartados adicionales */}
             <li>
               <Link
@@ -120,7 +113,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/meta-ahorro"
+                to="/metas-ahorro"
                 className="flex items-center p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
                 <span>Meta de Ahorro</span>
@@ -132,14 +125,6 @@ const Sidebar = () => {
                 className="flex items-center p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
                 <span>Recordatorios</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/contacto"
-                className="flex items-center p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span>Contacto</span>
               </Link>
             </li>
             <li>

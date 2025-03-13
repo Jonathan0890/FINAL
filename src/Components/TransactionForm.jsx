@@ -2,149 +2,176 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TransactionForm = ({ onTransactionAdded }) => {
-  const apiUrl = import.meta.env.VITE_APP_URL;
-  const [transaction, setTransaction] = useState({ amount: 0, category: '', description: '' });
+  // 1. Definir API URL correctamente
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7247/api';
+  
+  // 2. Estados del componente
+  const [transaction, setTransaction] = useState({
+    amount: '',
+    category: '',
+    description: ''
+  });
   const [categories, setCategories] = useState([]);
   const [customCategory, setCustomCategory] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Cargar categorías desde la API
-  const loadCategories = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/Categoria`);
-      setCategories(response.data.data || []);
-    } catch (error) {
-      console.error('Error al obtener categorías', error);
-    }
-  };
-
+  // 3. Cargar categorías
   useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/Categoria`);
+        setCategories(response.data?.data || []);
+      } catch (err) {
+        setError('Error cargando categorías');
+        console.error('❌ Error fetching categories:', err);
+      }
+    };
     loadCategories();
-  }, []);
+  }, [apiUrl]);
 
-  // Enviar la transacción
-  const submitTransaction = async (e) => {
+  // 4. Manejar envío del formulario
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!transaction.amount || !transaction.category) {
-      setMessage('Por favor, completa todos los campos.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setMessage('');
+    setLoading(true);
+    setError('');
 
     try {
-      let categoryId = transaction.category;
-
-      if (transaction.category === 'custom' && customCategory) {
-        const newCategoryResponse = await axios.post(`${apiUrl}/Categoria`, {
-          Nombre: customCategory,
-          Descripcion: '',
-        });
-
-        if (!newCategoryResponse.data || !newCategoryResponse.data.idCategoria) {
-          throw new Error('El backend no devolvió un ID de categoría válido.');
-        }
-
-        categoryId = newCategoryResponse.data.idCategoria;
-        setCategories(prevCategories => [...prevCategories, newCategoryResponse.data]); // Agregar la nueva categoría localmente
+      // Validación básica
+      if (!transaction.amount || !transaction.category) {
+        throw new Error('Completa todos los campos requeridos');
       }
 
+      let categoryId = transaction.category;
+
+      // Crear nueva categoría si es necesario
+      if (categoryId === 'custom' && customCategory.trim()) {
+        const newCategory = await axios.post(`${apiUrl}/Categoria`, {
+          nombre: customCategory.trim(),
+          descripcion: 'Categoría personalizada'
+        });
+        categoryId = newCategory.data.idCategoria;
+      }
+
+      // Estructura de datos para el backend
       const transactionData = {
-        Monto: parseFloat(transaction.amount.toFixed(2)),
-        Descripcion: transaction.description || 'Descripción de la transacción',
-        Fecha: new Date().toISOString(),
-        CategoriaId: parseInt(categoryId),
+        monto: parseFloat(transaction.amount),
+        descripcion: transaction.description,
+        fecha: new Date().toISOString(),
+        categoriaId: parseInt(categoryId, 10),
+        usuarioId: 1 // Cambiar por ID real del usuario logueado
       };
 
+      // Enviar transacción
       const response = await axios.post(`${apiUrl}/Transaccion`, transactionData);
+      
+      // Actualizar UI
       onTransactionAdded(response.data);
-      setMessage('Transacción agregada correctamente.');
-      setTransaction({ amount: 0, category: '', description: '' });
+      setTransaction({ amount: '', category: '', description: '' });
       setCustomCategory('');
-    } catch (error) {
-      setMessage('Error al agregar la transacción.');
+      setError('');
+
+    } catch (err) {
+      console.error('❌ Transaction error:', err.response?.data || err.message);
+      setError(err.response?.data?.message || 'Error procesando la transacción');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={submitTransaction} className="bg-white rounded-2xl p-6 space-y-5">
-      <h2 className="text-2xl font-bold text-gray-800">Nueva Transacción</h2>
-
-      <div>
-        <label htmlFor="amount" className="block text-gray-600 text-sm font-medium">Monto</label>
-        <input
-          type="number"
-          value={transaction.amount}
-          onChange={(e) => setTransaction({ ...transaction, amount: e.target.value })}
-          id="amount"
-          className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-light-blue focus:border-light-blue"
-          placeholder="Ingrese el monto"
-          required
-          min="0"
-          step="0.01"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="category" className="block text-gray-600 text-sm font-medium">Categoría</label>
-        <select
-          value={transaction.category}
-          onChange={(e) => setTransaction({ ...transaction, category: e.target.value })}
-          id="category"
-          className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-light-blue focus:border-light-blue"
-          required
-        >
-          <option value="">Seleccione una categoría</option>
-          {categories.map((category) => (
-            <option key={category.idCategoria} value={category.idCategoria}>
-              {category.Nombre}
-            </option>
-          ))}
-          <option value="custom">📌 Agregar una categoría personalizada</option>
-        </select>
-      </div>
-
-      {transaction.category === 'custom' && (
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Nueva Transacción</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Campo: Monto */}
         <div>
-          <label htmlFor="custom-category" className="block text-gray-600 text-sm font-medium">Nueva Categoría</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Monto (USD)
+          </label>
           <input
-            type="text"
-            value={customCategory}
-            onChange={(e) => setCustomCategory(e.target.value)}
-            id="custom-category"
-            className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-light-blue focus:border-light-blue"
-            placeholder="Ingrese el nombre de la categoría"
+            type="number"
+            value={transaction.amount}
+            onChange={(e) => setTransaction({...transaction, amount: e.target.value})}
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            required
           />
         </div>
-      )}
 
-      <div>
-        <label htmlFor="description" className="block text-gray-600 text-sm font-medium">Descripción</label>
-        <input
-          type="text"
-          value={transaction.description}
-          onChange={(e) => setTransaction({ ...transaction, description: e.target.value })}
-          id="description"
-          className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-light-blue focus:border-light-blue"
-          placeholder="Ingrese una descripción"
-        />
-      </div>
+        {/* Campo: Categoría */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Categoría
+          </label>
+          <select
+            value={transaction.category}
+            onChange={(e) => setTransaction({...transaction, category: e.target.value})}
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Selecciona una categoría</option>
+            {categories.map((cat) => (
+              <option key={cat.idCategoria} value={cat.idCategoria}>
+                {cat.nombre}
+              </option>
+            ))}
+            <option value="custom">➕ Nueva categoría</option>
+          </select>
+        </div>
 
-      <button
-        type="submit"
-        className="w-full bg-gray-800 text-white px-6 py-3 rounded-lg font-bold text-lg"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Agregando...' : 'Agregar Transacción'}
-      </button>
+        {/* Campo: Nueva categoría */}
+        {transaction.category === 'custom' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nombre de la nueva categoría
+            </label>
+            <input
+              type="text"
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+              placeholder="Ej: Gastos deportivos"
+              required
+            />
+          </div>
+        )}
 
-      {message && <p className={message.includes('Error') ? 'text-red-600' : 'text-green-600'}>{message}</p>}
-    </form>
+        {/* Campo: Descripción */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Descripción (opcional)
+          </label>
+          <input
+            type="text"
+            value={transaction.description}
+            onChange={(e) => setTransaction({...transaction, description: e.target.value})}
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ej: Compra en supermercado"
+          />
+        </div>
+
+        {/* Botón de envío */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 px-4 rounded-md font-medium ${
+            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'
+          }`}
+        >
+          {loading ? 'Procesando...' : 'Registrar Transacción'}
+        </button>
+
+        {/* Mensajes de error */}
+        {error && (
+          <div className="p-3 bg-red-100 text-red-700 rounded-md text-sm">
+            ⚠️ {error}
+          </div>
+        )}
+      </form>
+    </div>
   );
 };
 

@@ -4,10 +4,14 @@ import { useNavigate } from 'react-router-dom';
 const LoginView = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
 
         try {
             const response = await fetch(`${process.env.VITE_API_BASE_URL}/usuarios/login`, {
@@ -21,8 +25,12 @@ const LoginView = () => {
                 }),
             });
 
+            setLoading(false);
+
             if (!response.ok) {
-                throw new Error('Credenciales incorrectas');
+                const errorData = await response.json();
+                setError(errorData.message || 'Credenciales incorrectas');
+                throw new Error(errorData.message);
             }
 
             const data = await response.json();
@@ -32,8 +40,9 @@ const LoginView = () => {
             // Redirigir al usuario a la página principal
             navigate('/');
         } catch (error) {
+            setLoading(false);
             console.error('Error:', error);
-            alert('Credenciales incorrectas');
+            setError('Credenciales incorrectas');
         }
     };
 
@@ -53,6 +62,9 @@ const LoginView = () => {
         <div className="bg-[#1C1C1C] text-white min-h-screen flex items-center justify-center">
             <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
                 <h1 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h1>
+
+                {error && <div className="text-red-600 text-center mb-4">{error}</div>}
+
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>
                         <label htmlFor="email" className="block text-lg font-medium mb-2">Correo</label>
@@ -81,9 +93,10 @@ const LoginView = () => {
                     <div className="text-center">
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
+                            className={`px-6 py-2 ${loading ? 'bg-gray-500' : 'bg-red-600'} text-white font-bold rounded-lg hover:bg-red-700 transition-colors`}
+                            disabled={loading}
                         >
-                            Iniciar Sesión
+                            {loading ? 'Cargando...' : 'Iniciar Sesión'}
                         </button>
                     </div>
                 </form>

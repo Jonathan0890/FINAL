@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchItemById, updateItem } from "../../../Services/apiService";
+import { fetchById, update } from "../../../Services/apiService"; // Cambia fetchItemById por fetchById
 import { useParams } from "react-router-dom";
 
 const EditTrans = () => {
@@ -15,7 +15,7 @@ const EditTrans = () => {
 
     const fetchTransaccion = async () => {
         try {
-            const data = await fetchItemById("Transaccion", id);
+            const data = await fetchById("Transaccion", id); // Cambia fetchItemById por fetchById
             setMonto(data.Monto);
             setDescripcion(data.Descripcion);
             setFecha(data.Fecha.split("T")[0]); // Formato YYYY-MM-DD
@@ -30,7 +30,7 @@ const EditTrans = () => {
         const transaccionActualizada = { pkTransaccion: id, Monto: monto, Descripcion: descripcion, Fecha: fecha, CategoriaId: categoriaId };
 
         try {
-            await updateItem("Transaccion", id, transaccionActualizada);
+            await update("Transaccion", id, transaccionActualizada);
             alert("Transacción actualizada con éxito!");
         } catch (error) {
             console.error("Error al actualizar la transacción:", error);
