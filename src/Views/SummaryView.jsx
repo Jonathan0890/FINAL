@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import FinancialChart from '../components/FinancialChart';
-import Navbar from '../Components/Navbar';
+import FinancialChart from '../Components/Charts/FinancialChart';
+import Navbar from '../Components/Navigation/Navbar';
 
 const SummaryView = () => {
     const [barData, setBarData] = useState(null);

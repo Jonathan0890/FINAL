@@ -1,6 +1,6 @@
 import React from 'react';
-import ContactForm from '../components/ContactForm';
-import Navbar from '../Components/Navbar';
+import ContactForm from '../components/Forms/ContactForm';
+import Navbar from '../Components/Navigation/Navbar';
 
 const ContactView = () => {
     return (<>

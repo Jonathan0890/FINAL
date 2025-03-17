@@ -1,38 +1,41 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter,} from "react-router-dom";
 import HomeView from "../Views/HomeView.jsx";
 import ContactView from "../Views/ContactView.jsx";
-import RegisterView from "../Views/RegisterView.jsx";
-import LoginView from "../Views/LoginView.jsx";
-import ForgotPasswordView from "../Views/ForgotPasswordView.jsx";
-import TransactionCategoriesView from "../Views/TransactionCategoriesView.jsx";
-import TransactionRegisterView from "../Views/TransactionRegisterView.jsx";
+import RegisterView from "../Views/Auth/RegisterView.jsx";
+import LoginView from "../Views/Auth/LoginView.jsx";
+import ForgotPasswordView from "../Views/Auth/ForgotPasswordView.jsx";
+import TransactionCategoriesView from "../Views/Transactions/TransactionCategoriesView.jsx";
+import TransactionRegisterView from "../Views/Transactions/TransactionRegisterView.jsx";
 import SummaryView from "../Views/SummaryView.jsx";
-import AhorrosMetasView from "../Views/AhorrosMetasView.jsx";
-import RemindersView from "../Views/RemindersView.jsx";
-import CategoriaList from "../Views/CategoriaList.jsx";
+import AhorrosMetasView from "../Views/Savings/AhorrosMetasView.jsx";
+import RemindersView from "../Views/Reminders/RemindersView.jsx";
+import CategoriaList from "../Views/Shared/CategoriaList.jsx"
 //import TransactionList from "../components/TransactionList.jsx";
 // importaciones del dashboard
-import DashboardView from "../Views/DashboardView.jsx";
-import IndexCat from "../pages/Dashboard/Categorias/IndexCat.jsx";
-import Reportes from "../pages/Dashboard/Reportes/Repotes.jsx";
-import CreateCategoria from "../pages/Dashboard/Categorias/CreateCategoria.jsx";
-import EditCategoria from "../pages/Dashboard/Categorias/EditCategoria.jsx";
-import IndexUsuario from "../pages/Dashboard/Usuarios/indexUsu.jsx";
-import CreateUsuario from "../pages/Dashboard/Usuarios/CreateUsuario.jsx";
-import EditUsuario from "../pages/Dashboard/Usuarios/editUsuario.jsx";
-import IndexMetaAhorro from "../pages/Dashboard/Metas_Ahorro/IndexMA.jsx";
-import CreateMetaAhorro from "../pages/Dashboard/Metas_Ahorro/CreateMetas_Ahorro.jsx";
-import EditMetaAhorro from "../pages/Dashboard/Metas_Ahorro/EditMetas_Ahorro.jsx";
-import IndexRecordatorio from "../pages/Dashboard/Recordatorios/index.jsx";
-import CreateRecordatorio from "../pages/Dashboard/Recordatorios/createRecord.jsx";
-import EditRecordatorio from "../pages/Dashboard/Recordatorios/editRecord.jsx";
-import IndexTransaccion from "../pages/Dashboard/Transacciones/index.jsx";
-import CreateTransaccion from "../pages/Dashboard/Transacciones/createTransa.jsx";
-import EditTransaccion from "../pages/Dashboard/Transacciones/edit_Transa.jsx";
-import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import DashboardView from "../Views/Dashboard/DashboardView.jsx";
+//REPORTE
+import Reportes from "../Views/Dashboard/Reportes/Repotes.jsx";
+//CATEGORIAS
+import CreateCategoria from "../Views/Dashboard/Categorias/CreateCategoria.jsx";
+import IndexCat from "../Views/Dashboard/Categorias/IndexCat.jsx";
+import EditCategoria from "../Views/Dashboard/Categorias/EditCategoria.jsx";
+//USUARIOS
+import IndexUsuario from "../Views/Dashboard/Usuarios/indexUsu.jsx";
+import CreateUsuario from "../Views/Dashboard/Usuarios/CreateUsuario.jsx";
+import EditUsuario from "../Views/Dashboard/Usuarios/editUsuario.jsx";
+//METAS
+import IndexMetaAhorro from "../Views/Dashboard/Metas_Ahorro/IndexMA.jsx";
+import CreateMetaAhorro from "../Views/Dashboard/Metas_Ahorro/CreateMetas_Ahorro.jsx";
+import EditMetaAhorro from "../Views/Dashboard/Metas_Ahorro/EditMetas_Ahorro.jsx";
+//RECORDATORIOS
+import IndexRecordatorio from "../Views/Dashboard/Recordatorios/index.jsx";
+import CreateRecordatorio from "../Views/Dashboard/Recordatorios/createRecord.jsx";
+import EditRecordatorio from "../Views/Dashboard/Recordatorios/editRecord.jsx";
+//TRANSACCIONES
+import IndexTransaccion from "../Views/Dashboard/Transacciones/index.jsx";
+import CreateTransaccion from "../Views/Dashboard/Transacciones/createTransa.jsx";
+import EditTransaccion from "../Views/Dashboard/Transacciones/edit_Transa.jsx";
+//import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import Pantilla from "../pages/Pantilla.jsx";
 
 // Define las rutas correctamente
@@ -65,74 +68,66 @@ const router = createBrowserRouter([
   {
     path: "/categoriasd",
     element: <IndexCat />,
-    children: [
-      {
-        path: "create",
-        element: <CreateCategoria />,
+  },
+  {
+    path: "/categoriasd/create",
+    element: <CreateCategoria />,
 
-      },
-      {
-        path: "edit/:id",
-        element: <EditCategoria />
-      }
-    ]
+  },
+  {
+    path: "/categoriasd/edit/:id",
+    element: <EditCategoria />
   },
   {
     path: "/usuarios",
     element: <IndexUsuario />,
-    children: [
-      {
-        path: "create",
-        element: <CreateUsuario />,
-      },
-      {
-        path: "edit/:id",
-        element: <EditUsuario />
-      }
-    ]
+  },
+  {
+    path: "create",
+    element: <CreateUsuario />,
+  },
+  {
+    path: "edit/:id",
+    element: <EditUsuario />
   },
   {
     path: "/transacciones",
-    element: <IndexTransaccion/>,
-    children: [
-      {
-        path: "create",
-        element: <CreateTransaccion />,
-      },
-      {
-        path: "edit/:id",
-        element: <EditTransaccion />
-      }
-    ]
+    element: <IndexTransaccion />
+  },
+  {
+    path: "create",
+    element: <CreateTransaccion />,
+  },
+  {
+    path: "edit/:id",
+    element: <EditTransaccion />
   },
   {
     path: "/metas-ahorro",
-    element: <IndexMetaAhorro />,
-    children: [
-      {
-        path: "create",
-        element: <CreateMetaAhorro />,
-      },
-      {
-        path: "edit/:id",
-        element: <EditMetaAhorro />
-      }
-    ]
+    element: <IndexMetaAhorro />
+  },
+  {
+    path: "create",
+    element: <CreateMetaAhorro />,
+  },
+  {
+    path: "edit/:id",
+    element: <EditMetaAhorro />
   },
   {
     path: "/recordatorios",
-    element: <IndexRecordatorio />,
-    children: [
-      {
-        path: "create",
-        element: <CreateRecordatorio />,
-      },
-      {
-        path: "edit/:id",
-        element: <EditRecordatorio />
-      }
-    ]
-  }/*,
+    element: <IndexRecordatorio />
+  },
+  {
+    path: "create",
+    element: <CreateRecordatorio />,
+  },
+  {
+    path: "edit/:id",
+    element: <EditRecordatorio />
+  },
+
+  /*,
   {
     path: "/ventas-mensuales",
     element: <NotFoundView />
